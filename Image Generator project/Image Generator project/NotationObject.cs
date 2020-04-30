@@ -9,25 +9,42 @@ namespace Image_Generator_project
 {
     public class NotationObject
     {
-        public string Name;
+        public string Name
+        {
+            get { return name; }
+        }
+        private string name;
 
+        public Rectangle Rectangle
+        {
+            get { return minimumRect; }
+        }
+        private Rectangle minimumRect;
+
+        public List<List<Vector2D>> CoordinateSets
+        {
+            get { return coordinateSets; }
+        }
         private List<List<Vector2D>> coordinateSets;
+
 
         public NotationObject(string name, List<List<Vector2D>> coordinateSets) 
         {
-            this.Name = name;
+            this.name = name;
             this.coordinateSets = coordinateSets;
+
+            minimumRect = GetMininumRect();
         }
 
-        public Bitmap ToBitmap()
+        //Find the smallest rectangle that is necessary to contain all the points
+        private Rectangle GetMininumRect()
         {
-            //get width
             int x_min = int.MaxValue;
             int x_max = int.MinValue;
             int y_min = int.MaxValue;
             int y_max = int.MinValue;
 
-            foreach (List<Vector2D> coordinates in coordinateSets) 
+            foreach (List<Vector2D> coordinates in coordinateSets)
             {
                 foreach (Vector2D coordinate in coordinates)
                 {
@@ -38,27 +55,10 @@ namespace Image_Generator_project
                 }
             }
 
-            int range_x = x_max - x_min + 1;
-            int range_y = y_max - y_min + 1;
-            
-            Bitmap bitmap = new Bitmap(range_x, range_y);
+            int x_range = x_max - x_min + 1;
+            int y_range = y_max - y_min + 1;
 
-            Graphics graphics = Graphics.FromImage(bitmap);
-
-            foreach (List<Vector2D> coordinates in coordinateSets)
-            {
-                //Draw line from x -> x + 1
-                for (int i = 0; i < coordinates.Count - 1; i++) 
-                {
-                    Vector2D start = new Vector2D(coordinates[i].X - x_min, coordinates[i].Y - y_min);
-                    Vector2D end = new Vector2D(coordinates[i + 1].X - x_min, coordinates[i + 1].Y - y_min);
-
-                    Pen pen = new Pen(Brushes.Black, 2);
-                    graphics.DrawLine(pen, start.X, start.Y, end.X, end.Y);
-                }
-            }
-
-            return bitmap;
+            return new Rectangle(x_min, y_min, x_range, y_range);
         } 
     }
 }

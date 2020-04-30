@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -56,8 +57,7 @@ namespace Image_Generator_project
                         Directory.CreateDirectory(folder);
                     }
 
-
-                    System.Drawing.Bitmap bitmap = obj.ToBitmap();
+                    Bitmap bitmap = Drawer.CreateImage(obj);
 
                     bitmap.Save(folder + "\\" + "image" + i.ToString() + ".jpg");
                 }
