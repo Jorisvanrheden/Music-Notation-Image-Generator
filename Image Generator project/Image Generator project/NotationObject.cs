@@ -55,10 +55,19 @@ namespace Image_Generator_project
                 }
             }
 
+            foreach (List<Vector2D> coordinates in coordinateSets)
+            {
+                foreach (Vector2D coordinate in coordinates)
+                {
+                    coordinate.X -= x_min;
+                    coordinate.Y -= y_min;
+                }
+            }
+
             int x_range = x_max - x_min + 1;
             int y_range = y_max - y_min + 1;
 
-            return new Rectangle(x_min, y_min, x_range, y_range);
+            return new Rectangle(0, 0, x_range, y_range);
         } 
     }
 }

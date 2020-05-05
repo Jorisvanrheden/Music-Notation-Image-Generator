@@ -37,33 +37,59 @@ namespace Image_Generator_project
             }
         }
 
+        private static Rectangle GetLargestRectangle(List<NotationObject> objects)
+        {
+            Rectangle rectangle = new Rectangle(0, 0, 0, 0);
+
+            foreach (NotationObject obj in objects)
+            {
+                if (obj.Rectangle.Width > rectangle.Width) rectangle.Width = obj.Rectangle.Width;
+                if (obj.Rectangle.Height > rectangle.Height) rectangle.Height = obj.Rectangle.Height;
+            }
+
+            return rectangle;
+        }
+
+        private static void CreateImages(List<NotationObject> objects, Rectangle rectangle)
+        {
+            for (int i = 0; i < objects.Count; i++)
+            {
+                string folder = OUTPUT_FOLDER_BASE + objects[i].Name;
+                string output = folder + "\\" + "image" + i.ToString() + ".jpg";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                Bitmap bitmap = Drawer.CreateImage(objects[i], rectangle, 2);
+                bitmap.Save(output);
+
+                //Console.WriteLine("Completed: " + ((float)i / (float)objects.Count) * 100 + "%");
+            }
+        }
+
         static void Main(string[] args)
         {
             List<string> folders = new List<string>();
+
+            List<NotationObject> notationObjects = new List<NotationObject>();
 
             string[] directories = Directory.GetDirectories(INPUT_FOLDER_BASE);
             for (int i = 0; i < directories.Length; i++) 
             {
                 //Get files per directory
-
                 string[] files = Directory.GetFiles(directories[i]);
                 for (int j = 0; j< files.Length; j++)
                 {
                     NotationObject obj = Parser.Read(files[j]);
-
-                    string folder = OUTPUT_FOLDER_BASE + obj.Name;
-                    if (!Directory.Exists(folder))
-                    {
-                        Directory.CreateDirectory(folder);
-                    }
-
-                    Bitmap bitmap = Drawer.CreateImage(obj);
-
-                    bitmap.Save(folder + "\\" + "image" + i.ToString() + ".jpg");
+                    notationObjects.Add(obj);                             
                 }
 
                 Console.WriteLine("Completed: " + ((float)i / (float)directories.Length) * 100 + "%");
-            }           
+            }
+
+            Rectangle rectangle = GetLargestRectangle(notationObjects);
+            CreateImages(notationObjects, rectangle);
         }
     }
 }
